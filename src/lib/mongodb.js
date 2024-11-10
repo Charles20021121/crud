@@ -1,10 +1,13 @@
 import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
-const NODE_ENV = process.env.NODE_ENV;
 
 if (!MONGODB_URI) {
-  throw new Error('請在環境變量中設置MONGODB_URI');
+  throw new Error(
+    '環境變量MONGODB_URI未設置。' +
+    '請在Vercel儀表板中的Settings -> Environment Variables中添加此變量。' +
+    '當前環境變量：' + JSON.stringify(process.env, null, 2)
+  );
 }
 
 let cached = global.mongoose;
@@ -24,12 +27,6 @@ async function connectDB() {
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
-      family: 4,
-      ssl: true,
-      sslValidate: true,
-      ...(process.env.PLATFORM === 'heroku' ? {
-        retryWrites: false
-      } : {}),
     };
 
     // 總是啟用調試日誌
